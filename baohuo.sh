@@ -2,9 +2,8 @@
 
 # 从命令行参数获取配置
 SERVERS_INFO="$1"
-DINGTALK_WEBHOOK="$2"
-TELEGRAM_BOT_TOKEN="$3"
-TELEGRAM_CHAT_ID="$4"
+TELEGRAM_BOT_TOKEN="$2"
+TELEGRAM_CHAT_ID="$3"
 
 # 初始化日志内容
 log=""
@@ -19,14 +18,6 @@ send_telegram_message() {
         -d "chat_id=${TELEGRAM_CHAT_ID}" \
         -d "text=${message}" \
         -d "parse_mode=Markdown" >/dev/null 2>&1
-}
-
-# 发送钉钉消息函数
-send_dingtalk_message() {
-    local message=$1
-    curl -s "${DINGTALK_WEBHOOK}" \
-        -H 'Content-Type: application/json' \
-        -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"${message}\"}}"
 }
 
 # 从 JSON 字符串解析服务器信息为数组
@@ -64,7 +55,6 @@ for server_info in $servers; do
         fi
 
         # 发送单个执行结果
-        send_dingtalk_message "$message"
         send_telegram_message "$message"
     done
 done
@@ -83,5 +73,4 @@ ${failed_execs}"
 fi
 
 # 发送汇总信息
-send_dingtalk_message "$summary"
 send_telegram_message "$summary"
